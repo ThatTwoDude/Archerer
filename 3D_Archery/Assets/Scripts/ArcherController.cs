@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.Characters.ThirdPerson;
+using System;
 
 public class ArcherController : MonoBehaviour
 {
@@ -9,11 +11,21 @@ public class ArcherController : MonoBehaviour
 
     [SerializeField]
     GameObject spawnPoint;
+
     [SerializeField]
     GameObject projectilePrefab;
+
     [SerializeField]
-    float arrow_speed = 1;
+    float arrow_speed = 10;
+
+    DateTime lastSpawnTime = DateTime.Now.AddMilliseconds(-100000000);
     // Start is called before the first frame update
+    [SerializeField]
+    int TimeBetweenShots = 2000; //milliseconds
+    
+    [SerializeField]
+    float arrow_spin_speed = 10;
+
     void Start()
     {
         Animator anim = GetComponent<Animator>();
@@ -46,8 +58,12 @@ public class ArcherController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            anim.SetTrigger("Attack");
-            
+            //only allow a shot if it's been the right amount of time since the last shot
+            if((DateTime.Now - lastSpawnTime).TotalMilliseconds > TimeBetweenShots) 
+            {
+                anim.SetTrigger("Attack");
+                lastSpawnTime = DateTime.Now;
+            }
         }
     }
 
@@ -70,6 +86,9 @@ public class ArcherController : MonoBehaviour
 
         Rigidbody arrow_rb = arrow.GetComponent<Rigidbody>();
         arrow_rb.velocity = spawnPoint.transform.forward * arrow_speed;
+
+        //add torque
+        arrow_rb.AddTorque(Vector3.right * arrow_spin_speed, ForceMode.Impulse);
         Destroy(arrow, 5);
     }
 }
