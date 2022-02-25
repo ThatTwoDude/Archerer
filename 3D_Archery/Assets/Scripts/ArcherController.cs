@@ -17,7 +17,7 @@ public class ArcherController : MonoBehaviour
     void Start()
     {
         Animator anim = GetComponent<Animator>();
-        rb = GetComponentInParent<Rigidbody>()
+        rb = GetComponentInParent<Rigidbody>();
     }
 
     // Update is called once per frame
